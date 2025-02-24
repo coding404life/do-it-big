@@ -1,41 +1,11 @@
 import { useState } from "react";
 import { DndContext, useDroppable } from "@dnd-kit/core";
 
-import ReactMarkdown from "react-markdown";
 import "./App.css"; // Include Tailwind CSS
 import { Sidebar } from "./components/Sidebar";
+import TextComponent from "./components/draggable-components/TextComponent";
+import ImageComponent from "./components/draggable-components/ImageComponent";
 
-// Text Component
-const TextComponent = ({ content, onChange }) => (
-  <div className={`p-4 w-1/2 border`}>
-    <textarea
-      value={content}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full"
-    />
-
-    <ReactMarkdown>{content}</ReactMarkdown>
-  </div>
-);
-
-// Image Component
-const ImageComponent = ({ url, onChange }) => (
-  <div className={`p-4  w-1/2  border`}>
-    <input
-      value={url}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Image URL"
-      className="w-full mb-2"
-    />
-    <img
-      src={url || "https://placehold.co/600x400"}
-      alt="preview"
-      className="w-full"
-    />
-  </div>
-);
-
-// Droppable Canvas
 const DroppableCanvas = ({ children, id }) => {
   const { setNodeRef } = useDroppable({ id });
   return (
@@ -48,19 +18,17 @@ const DroppableCanvas = ({ children, id }) => {
 // Main App
 const App = () => {
   const [components, setComponents] = useState([]);
-  console.log({ components });
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
     console.log({ active, over });
 
     if (over && over.id === "dropped-into-canvas") {
-      const newComponent =
-        active.id === "text"
-          ? { id: Date.now(), type: "text", content: "" }
-          : { id: Date.now(), type: "image", url: "" };
+      const newComponent = {
+        id: Date.now(),
+        type: active.id,
+      };
 
-      console.log({ newComponent });
       setComponents((prev) => [...prev, newComponent]);
     }
   };
