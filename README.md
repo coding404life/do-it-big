@@ -2,6 +2,9 @@
 - Tools: React, Tailwind-CSS, Vite, 
 - Implemented Drag and drop functionality using ( dnd-kit, react markdown )
 
+# To run the app use the following commands
+1. `yarn install`
+2. `yarn dev`
 
 # Desktop
  ![image](https://github.com/user-attachments/assets/9cc49107-90dd-4247-94e5-e7aa854b6b75)
