@@ -8,10 +8,9 @@ import {
   TouchSensor,
 } from "@dnd-kit/core";
 
-import { Sidebar } from "./components/Sidebar";
-import TextComponent from "./components/draggable-components/TextComponent";
-import ImageComponent from "./components/draggable-components/ImageComponent";
+import { Sidebar } from "./components/sidebar/Sidebar";
 import Preview from "./components/Preview";
+import { COMPONENT_TYPES } from "./components/component-types";
 
 const DroppableCanvas = ({ children, id }) => {
   const { setNodeRef } = useDroppable({ id });
@@ -25,32 +24,61 @@ const DroppableCanvas = ({ children, id }) => {
   );
 };
 
-// Main App
 const App = () => {
   const [components, setComponents] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    console.log({ active, over });
 
     if (over && over.id === "dropped-into-canvas") {
-      const newComponent = {
-        id: Date.now(),
-        type: active.id,
-      };
+      const componentConfig = COMPONENT_TYPES[active.id];
 
-      setComponents((prev) => [...prev, newComponent]);
+      if (componentConfig) {
+        const newComponent = {
+          id: Date.now(),
+          type: active.id,
+          ...componentConfig.defaultProps,
+        };
+
+        setComponents((prev) => [...prev, newComponent]);
+      }
     }
   };
 
-  const updateComponent = (id, updates) => {
+  const updateComponent = (id, updates, defaultProps) => {
     setComponents(
-      components.map((c) => (c.id === id ? { ...c, ...updates } : c))
+      components.map((component) =>
+        component.id === id
+          ? {
+              ...component,
+              ...(defaultProps.url !== undefined ? { url: updates } : {}),
+              ...(defaultProps.content !== undefined
+                ? { content: updates }
+                : {}),
+            }
+          : component
+      )
+    );
+  };
+
+  const renderComponent = (component) => {
+    const { Component, defaultProps } = COMPONENT_TYPES[component.type] || {};
+    if (!Component) return null;
+
+    return (
+      <Component
+        key={component.id}
+        {...component}
+        onChange={(updates) =>
+          updateComponent(component.id, updates, defaultProps)
+        }
+      />
     );
   };
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
+
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="overflow-y-scroll h-screen">
@@ -61,23 +89,7 @@ const App = () => {
           {/* Canvas */}
           <DroppableCanvas id="dropped-into-canvas">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-              {components.map((comp) =>
-                comp.type === "text" ? (
-                  <TextComponent
-                    key={comp.id}
-                    {...comp}
-                    onChange={(content) =>
-                      updateComponent(comp.id, { content })
-                    }
-                  />
-                ) : (
-                  <ImageComponent
-                    key={comp.id}
-                    {...comp}
-                    onChange={(url) => updateComponent(comp.id, { url })}
-                  />
-                )
-              )}
+              {components.map((comp) => renderComponent(comp))}
             </div>
           </DroppableCanvas>
         </div>
