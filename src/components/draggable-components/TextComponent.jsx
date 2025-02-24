@@ -1,14 +1,15 @@
 import Markdown from "react-markdown";
 
 const TextComponent = ({ content, onChange }) => (
-  <div className={"border rounded p-4 w-1/2"}>
+  <div className="border rounded p-4">
     <textarea
       value={content}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border p-1 rounded"
+      className="w-full p-1 "
+      placeholder="Text"
     />
 
-    <div className="prose">
+    <div className="prose break-words">
       <Markdown>{content}</Markdown>
     </div>
   </div>

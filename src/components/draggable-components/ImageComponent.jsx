@@ -1,5 +1,5 @@
 const ImageComponent = ({ url, onChange }) => (
-  <div className={"p-4 w-1/2 border rounded"}>
+  <div className={"p-4 border rounded"}>
     <input
       value={url}
       onChange={(e) => onChange(e.target.value)}
