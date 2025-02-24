@@ -1,20 +1,5 @@
-import { Image, Type } from "lucide-react";
 import { DraggableItem } from "./DraggableItem";
-
-const ELEMENTS = [
-  {
-    id: "image",
-    type: "image",
-    Icon: Image,
-    label: "Image",
-  },
-  {
-    id: "text",
-    type: "text",
-    Icon: Type,
-    label: "Text",
-  },
-];
+import { ELEMENTS } from "./sidebar-elements";
 
 export function Sidebar() {
   return (
